@@ -2,58 +2,62 @@ let sourceImage;
 let pixelArray = [];
 
 function preload() {
-  sourceImage = loadImage('assets/dove_original.jpg'); // 修正路径
+  sourceImage = loadImage("assets/dove_original.jpg");
 }
 
 function setup() {
-  let canvas = createCanvas(240, 120);
-  canvas.parent('canvas-container'); // ✅ 这一句是关键
-  pixelArray = extractPixelData(sourceImage);
-  drawPixels(pixelArray, 0, 0);
-}
+  createCanvas(600, 600); // 大画布
+  noSmooth(); // 关闭插值
+  noLoop();
 
+  sourceImage.resize(120, 120); // 压缩至目标分辨率
+  sourceImage.loadPixels();
 
-function extractPixelData(img) {
-  let w = 120;
-  let h = 120;
-  img.resize(w, h);
-  img.loadPixels();
-  let result = [];
+  pixelArray = [];
 
-  for (let y = 0; y < h; y++) {
+  for (let y = 0; y < sourceImage.height; y++) {
     let row = [];
-    for (let x = 0; x < w; x++) {
-      let index = (y * w + x) * 4;
-      let r = img.pixels[index];
-      let g = img.pixels[index + 1];
-      let b = img.pixels[index + 2];
+    for (let x = 0; x < sourceImage.width; x++) {
+      let index = (y * sourceImage.width + x) * 4;
+      let r = sourceImage.pixels[index];
+      let g = sourceImage.pixels[index + 1];
+      let b = sourceImage.pixels[index + 2];
 
+      let brightness = (r + g + b) / 3;
       let val = 0;
-      if (r > 180 && g > 180 && b > 180) {
-        val = 1;
-      } else if (g > 100 && g > r && g > b) {
-        val = 2;
+
+      if (brightness > 150 && brightness < 230) {
+        val = 1; // 黑色线
+      } else if (g > 120 && g > r + 30 && g > b + 30) {
+        val = 2; // 绿色橄榄枝
       }
+
       row.push(val);
     }
-    result.push(row);
+    pixelArray.push(row);
   }
 
-  return result;
+  drawPixels(pixelArray, 0, 0, 5); // 缩放倍数：5x
 }
 
-function drawPixels(arr, offsetX, offsetY) {
-  let scale = 2;
+function drawPixels(arr, offsetX, offsetY, scale) {
   noStroke();
   for (let y = 0; y < arr.length; y++) {
     for (let x = 0; x < arr[y].length; x++) {
       let v = arr[y][x];
-      if (v === 1) fill(255);          // Dove: white
-      else if (v === 2) fill(0, 255, 0); // Olive branch: green
-      else fill(0);                    // Background: black
+      if (v === 1) fill(0);          // 黑线条
+      else if (v === 2) fill(0, 180, 0); // 绿色
+      else fill(255);               // 背景
       rect(x * scale + offsetX, y * scale + offsetY, scale, scale);
     }
   }
 }
+
+
+
+
+
+
+
 
 
