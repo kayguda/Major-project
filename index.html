@@ -2,22 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dove and Olive Branch Extractor</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Pixel Dot Art</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
-  <main>
-    <h1>Dove & Olive Branch Pixel Visualisation</h1>
-    <p>This sketch automatically extracts the dove and olive branch from the original Picasso image.</p>
-    <div id="canvas-container"></div>
-  </main>
+  <script>
+    let img;
+    let xstep = 10;
+    let ystep = 10;
 
-  <!-- Load p5.js core libraries -->
-  <script src="libraries/p5.min.js"></script>
-  <script src="libraries/p5.sound.min.js"></script>
-  <script src="sketch.js"></script>
+    function preload() {
+      img = loadImage("assets\Piet_Mondrian Broadway_Boogie_Woogie.jpeg"); // 修改为你图片的实际路径
+    }
+
+    function setup() {
+      createCanvas(1000, 1000);
+      noStroke();
+      img.resize(0, height); // 保持纵向尺寸一致
+    }
+
+    function draw() {
+      background(255);
+
+      for (let i = 0; i < img.width; i += xstep) {
+        for (let j = 0; j < img.height; j += ystep) {
+          let col = img.get(i, j);
+          let bri = brightness(color(col));
+          let size = map(bri, 0, 255, 20, 0);
+
+          fill(col);
+          circle(i, j, size);
+        }
+      }
+
+      noLoop();
+    }
+  </script>
 </body>
 </html>
+
 
 
