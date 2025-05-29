@@ -2,31 +2,52 @@ let img;
 let dots = [];
 let xstep = 10;
 let ystep = 10;
+let imgScale = 1;
+let imgXOffset = 0;
+let imgYOffset = 0;
 
 function preload() {
   img = loadImage('assets/Piet_Mondrian Broadway_Boogie_Woogie.jpeg');
 }
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(windowWidth, windowHeight);
   noStroke();
-  img.resize(0, height);
+  calculateImageAndDots();
+}
 
-  // 逐点构建 Dot 对象
+function draw() {
+  background(255);
+  push();
+  translate(imgXOffset, imgYOffset);
+  for (let dot of dots) {
+    dot.display();
+  }
+  pop();
+}
+
+// 自动重设画布与图像缩放
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  calculateImageAndDots();
+}
+
+// 重新计算图像缩放和 Dot 点阵
+function calculateImageAndDots() {
+  dots = [];
+
+  // 按高等比缩放图片（高度占满画布），同时计算 x 居中偏移
+  img.resize(0, height);
+  imgScale = height / img.height;
+  imgXOffset = (width - img.width) / 2;
+  imgYOffset = 0;
+
   for (let i = 0; i < img.width; i += xstep) {
     for (let j = 0; j < img.height; j += ystep) {
       let col = img.get(i, j);
       dots.push(new Dot(i, j, col));
     }
   }
-}
-
-function draw() {
-  background(255);
-  for (let dot of dots) {
-    dot.display();
-  }
-  noLoop(); // 只绘制一次
 }
 
 class Dot {
