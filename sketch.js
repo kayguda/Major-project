@@ -1,82 +1,53 @@
-// Global variables
-let img;                  // The original image
-let dots = [];            // Array to store dot objects
-let xStep = 10;           // Horizontal spacing between dots
-let yStep = 10;           // Vertical spacing between dots
-let imgScale = 1;         // Scale factor of the image
-let imgXOffset = 0;       // X offset for centering image
-let imgYOffset = 0;       // Y offset (not used here but prepared for future layout)
+let imgOriginal;    // 原始图像，不会被修改
+let img;            // 当前绘图图像（每次复制原始图像）
+let dots = [];      // 储存所有 Dot 实例
+let xStep = 10;     // 横向像素间隔
+let yStep = 10;     // 纵向像素间隔
+let imgScale = 1;   // 图像缩放比例
+let imgXOffset = 0; // 图像居中偏移量
+let imgYOffset = 0; // 预留纵向偏移
 
 function preload() {
-  // Load image before setup starts
-  img = loadImage('assets/Piet_Mondrian Broadway_Boogie_Woogie.jpeg');
+  // 只加载一次原图
+  imgOriginal = loadImage('assets/Piet_Mondrian Broadway_Boogie_Woogie.jpeg');
 }
 
 function setup() {
-  // Create canvas that fills the window
   createCanvas(windowWidth, windowHeight);
   noStroke();
-
-  // Initial calculation for positioning and dot generation
-  calculateImageAndDots();
+  calculateImageAndDots(); // 初始化图像和 Dot 数据
 }
 
 function draw() {
   background(255);
-
-  // Center the image before drawing dots
-  push();
-  translate(imgXOffset, imgYOffset);
   for (let dot of dots) {
     dot.display();
   }
-  pop();
+  noLoop();
 }
 
-// Resize canvas when window is resized
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  calculateImageAndDots(); // Recalculate image and dots
+  calculateImageAndDots(); // 每次窗口变化时重建图像与 dots
 }
 
-// Recalculate image scaling and recreate dot data
 function calculateImageAndDots() {
   dots = [];
 
-  // Resize image to fit height, keep aspect ratio
-  img.resize(0, height);
+  // 每次从原图复制出一个新图像对象用于缩放
+  img = imgOriginal.get();
+  img.resize(0, height); // 按高度缩放，保持宽高比
+
   imgScale = height / img.height;
-
-  // Center image horizontally
   imgXOffset = (width - img.width) / 2;
-  imgYOffset = 0;
+  imgYOffset = 0; // 当前未使用，但可用于后续拓展
 
-  // Loop through pixels at steps and create dot instances
   for (let i = 0; i < img.width; i += xStep) {
     for (let j = 0; j < img.height; j += yStep) {
       let pixelColor = img.get(i, j);
-      dots.push(new Dot(i, j, pixelColor));
+      let bri = brightness(pixelColor);
+      let size = map(bri, 0, 255, 20, 0);
+      dots.push(new Dot(i + imgXOffset, j + imgYOffset, pixelColor, size));
     }
-  }
-}
-
-// Dot class: represents a single pixel dot derived from the image
-class Dot {
-  constructor(x, y, col) {
-    this.x = x;
-    this.y = y;
-    this.col = col;
-
-    // Get brightness from pixel color
-    this.brightness = brightness(color(col));
-
-    // Map brightness to circle size (inverse mapping)
-    this.size = map(this.brightness, 0, 255, 20, 0);
-  }
-
-  // Display the dot on the canvas
-  display() {
-    fill(this.col);
-    circle(this.x, this.y, this.size);
   }
 }
