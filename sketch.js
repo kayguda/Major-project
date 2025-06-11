@@ -75,20 +75,6 @@ function calculateImageAndDots() {
 }
 
 
-class Dot {
-  constructor(x, y, color, size) {
-    this.x = x;
-    this.y = y;
-    this.originalColor = color;
-    this.color = color;
-    this.size = size; // Adjusted size range
-  }
-
-  display() {
-    fill(this.color);
-    ellipse(this.x, this.y, this.size, this.size);  // Draw the dot
-  }
-
   // Method to check if snake eats the dot
  checkIfEaten(snakeHead) {
     let d = dist(this.x, this.y, snakeHead.x, snakeHead.y);
