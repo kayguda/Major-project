@@ -55,8 +55,8 @@ function setup() {
 
 function restart() {
   // Resize canvas to same size, but make sure it's aligned top-left
-  createCanvas(windowWidth, windowHeight);
-  canvas.position(0, 0);  // Put canvas at top-left
+  createCanvas(800, 800);
+  canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
 
   // Reset all state
   calculateImageAndDots();
